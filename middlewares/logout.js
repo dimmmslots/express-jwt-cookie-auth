@@ -3,8 +3,11 @@ function logout() {
         // clean cookie
         res.clearCookie('token');
         return res.status(200).json({
-            auth: false,
-            token: null
+            status: success,
+            message: 'Logout successful',
+            data: {
+                token: null
+            }
         })
     }
 }
