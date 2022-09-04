@@ -2,6 +2,9 @@ const db = require('../helpers/database.js');
 const User = db.Users;
 const Op = db.Sequelize.Op;
 const bcrypt = require('bcryptjs');
+const config = require('dotenv').config().parsed;
+const jwt = require('jsonwebtoken');
+const cookieParser = require('cookie-parser');
 
 const userController = {}
 
@@ -35,14 +38,16 @@ userController.authenticate = async (req, res) => {
     const { email, password } = req.body;
     try {
         const user = await User.findOne({ where: { email } });
-        if (user && bcrypt.compareSync(password, user.hash)) {
-            const { hash, ...userWithoutHash } = user.get();
-            res.send({
-                ...userWithoutHash
-            });
-        } else {
-            res.status(400).send('Username or password is incorrect');
+        if (!user || !(bcrypt.compareSync(password, user.hash))) {
+            return res.status(401).send({ message: 'Invalid email or password' });
         }
+        const token = jwt.sign({ sub: user.id, role: user.role }, config.JWT_SECRET, { expiresIn: 86400 });
+        // clean cookie
+        res.clearCookie('token');
+        return res.cookie('token', token, { httpOnly: true }).status(200).json({
+            auth: true,
+            token
+        })
     } catch (error) {
         res.status(500).send({
             message: error.message || 'Some error occurred while authenticating the user.'
