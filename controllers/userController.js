@@ -7,7 +7,7 @@ const jwt = require('jsonwebtoken');
 
 const userController = {}
 
-userController.create = async (req, res) => {
+userController.create = async (req, res, next) => {
     try {
         let { email, password, role } = req.body;
         const duplicate = await User.findOne({ where: { email: email } });
@@ -27,8 +27,8 @@ userController.create = async (req, res) => {
             role
         };
         User.create(user)
-            .then(data => {
-                res.json(data);
+            .then(() => {
+                next();
             })
             .catch(err => {
                 res.status(500).json({
@@ -44,7 +44,7 @@ userController.create = async (req, res) => {
     }
 }
 
-userController.authenticate = async (req, res) => {
+userController.authenticate = async (req, res, next) => {
     const { email, password } = req.body;
     try {
         const user = await User.findOne({ where: { email } });
@@ -56,13 +56,9 @@ userController.authenticate = async (req, res) => {
         }
         const token = jwt.sign({ sub: user.id, role: user.role }, config.JWT_SECRET, { expiresIn: 86400 });
         // clean cookie
-        res.clearCookie('token');
-        return res.cookie('token', token, { httpOnly: true }).status(200).json({
+        res.cookie('token', token, { maxAge: 86400 * 2, httpOnly: true }).json({
             status: 'success',
             message: 'Login successful',
-            data: {
-                token
-            }
         })
     } catch (error) {
         res.status(500).json({
