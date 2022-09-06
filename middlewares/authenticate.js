@@ -32,21 +32,6 @@ function authenticate() {
             }
         }
     ]
-    // return [
-    //     // authenticate JWT token and attach user to request object (req.user)
-    //     jwt({ secret: config.JWT_SECRET, algorithms: ['HS256'] }).unless({
-    //         path: [
-    //             ,
-    //     // attach user to request object (req.user)
-    //     async (req, res, next) => {
-    //         const user = await db.Users.findByPk(req.user.sub);
-    //         if (!user) {
-    //             return res.status(401).json({ message: 'Unauthorized' });
-    //         }
-    //         req.user = user.get();
-    //         next();
-    //     }
-    // ]
 }
 
 module.exports = authenticate;
