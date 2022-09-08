@@ -6,6 +6,10 @@ indexController.login = (req, res) => {
 }
 
 indexController.signup = (req, res) => {
+    if (req.cookies.token) {
+        // redirect to home page
+        return res.redirect('/protected/dashboard');
+    }
     res.sendFile('/pages/signup.html', { root: 'public' });
 }
 

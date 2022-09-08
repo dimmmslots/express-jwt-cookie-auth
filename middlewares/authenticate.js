@@ -2,6 +2,7 @@ const jwt = require('express-jwt');
 const jsonwebtoken = require('jsonwebtoken');
 const config = require('dotenv').config().parsed;
 const db = require('../helpers/database.js');
+const redisconn = require('../helpers/redisconn.js');
 function authenticate() {
     return [
         async (req, res, next) => {

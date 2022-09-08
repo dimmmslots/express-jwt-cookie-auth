@@ -56,6 +56,7 @@ userController.authenticate = async (req, res, next) => {
         }
         const token = jwt.sign({ sub: user.id, role: user.role }, config.JWT_SECRET, { expiresIn: 86400 });
         // clean cookie
+        res.clearCookie('token');
         res.cookie('token', token, { maxAge: 86400 * 2, httpOnly: true }).json({
             status: 'success',
             message: 'Login successful',
